@@ -7,7 +7,7 @@ from utils import pause
 import attendance
 
 
-ConfigFile = './config.json'
+ConfigFile = './test/config_9c.json'
 mainMenuLen = 30
 attendance.dateformat
 
@@ -277,9 +277,13 @@ Configurations:
 
 def datefmt(date: str):
 	if date is not None:
-		seperators = [' ', '/', '\\', '.']
-		for seperator in seperators:
-			date = date.replace(seperator, '-')
+		try:
+			int(date)
+			date = "-".join([date[0:2], date[2:4], date[4:6]])
+		except:
+			seperators = [' ', '/', '\\', '.']
+			for seperator in seperators:
+				date = date.replace(seperator, '-')
 		return date
 
 
@@ -332,12 +336,16 @@ def mainClass(classroom:attendance.Classroom):
 					print(f"Taking attendance for {subject_list[int(choice[1:])-1]}\n")
 					record(classroom, subject_list[int(choice[1:])-1])
 				input("\nPress enter to return.")
+
 			elif choice.startswith('V'):
 				detailed = True if 'D' in choice else False
-				subjectChooser = choice[1:] if choice[1] != 'D' else choice[2:]
 
 				if len(choice) == 1 or (len(choice) == 2 and choice[1:].startswith('D')):
-					view(classroom, date=param, detailed=detailed)
+					param = None if param in ['', ' '] else param
+					view(classroom, date=datefmt(param), detailed=detailed)
+					input("Press enter to return.")
+					continue
+				subjectChooser = choice[1:] if choice[1] not in ['D', 'C'] else choice[2:]
 
 				if 'C' in choice:
 					subjectname, date = param, None
@@ -352,6 +360,7 @@ def mainClass(classroom:attendance.Classroom):
 					param = None if param in ['', ' '] else param
 					view(classroom, subject_list[int(subjectChooser)-1], datefmt(param), detailed=detailed)
 				input("Press enter to return.")
+
 			elif choice.startswith('E'):
 				try:
 					recorder = classroom.getrecorders(subject_name=subject_list[int(choice[1:])-1], date=datefmt(param))[0]
