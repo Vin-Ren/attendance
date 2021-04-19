@@ -7,7 +7,7 @@ from utils import pause
 import attendance
 
 
-ConfigFile = './test/config_9c.json'
+ConfigFile = './config.json'
 mainMenuLen = 30
 attendance.dateformat
 
