@@ -1,0 +1,15 @@
+{
+    "database_filename": "./data.json",
+    "subject_list": "Science, Literature, Math",
+    "view_caseinsensitive": true,
+    "classroom_constructor": {
+        "class_name": "Example Class",
+        "students_file": "./students.txt",
+        "attendance_parameters": {
+            "0": "Alpha",
+            "1": "Present",
+            "2": "Permit",
+            "3": "Sick"
+        }
+    }
+}
