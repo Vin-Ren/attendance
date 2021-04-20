@@ -79,8 +79,8 @@ def saveData(school: attendance.School = None,
 
 
 def record(classroom:attendance.Classroom,
-		   subject_name):
-	recorder = classroom.create_recorder(subject_name=subject_name, date=currdate())
+		   subject_name, date=None):
+	recorder = classroom.create_recorder(subject_name=subject_name, date=currdate() or date)
 	recorder.record()
 	saveData(classroom)
 	return classroom
@@ -135,7 +135,7 @@ def formatter(recorder:attendance.Recorder,
 	if detailed:
 		formatted_strings += [f"Created on       : {recorder.created_datetime}",
 							  f"Last Modified On : {recorder.modified_datetime}",
-							  f"Recorder Repr    :{recorder}"]
+							  f"Recorder Repr    : {recorder}"]
 
 	formatted_string = "\n".join(formatted_strings)
 
@@ -194,7 +194,7 @@ def help(cmd=None):
 			--Help Menu--
 			[R|RC]Record
 			[V|VD|VC|VCD]View
-			[E]Edit
+			[E|EC]Edit
 			[I|ID]Classroom Information
 			[C]Config Information
 			[H]Help
@@ -367,22 +367,37 @@ def mainClass(classroom:attendance.Classroom):
 					recorder = edit(classroom, recorder)
 					print("\nSuccessfully Updated Record.\n")
 					print(formatter(recorder))
-
+				except ValueError:
+					if 'C' in choice:
+						subjectname, date = param, None
+						try:
+							subjectname, date = param.split(' ', 1)
+						except ValueError:
+							if verifyDate(param):
+								date = param
+						recorder = classroom.getrecorders(subject_name=subjectname, date=datefmt(date))[0]
+						recorder = edit(classroom, recorder)
+						print("\nSuccessfully Updated Record.\n")
+						print(formatter(recorder))
 				except IndexError:
 					print("No Recorder Found.")
 				input("Press enter to return.")
+
 			elif choice.startswith('I'):
 				detailedKeywords = ['D', 'DET', 'DETAIL','DETAILED']
 				detailed = True if choice[1:].upper() in detailedKeywords else False
 				detailed = True if param.upper() in detailedKeywords else detailed
 				classroomInfo(classroom, detailed=detailed)
 				input("Press enter to return.")
+
 			elif choice in ['C', 'CI', 'CONFIG']:
 				configInfo()
 				input("Press enter to return.")
+
 			elif choice in ['H', 'HELP']:
 				help(param)
 				input("Press enter to return.")
+
 			elif choice in ['X', 'EXIT', '0']:
 				break
 			else:
@@ -395,5 +410,14 @@ def mainClass(classroom:attendance.Classroom):
 
 
 if __name__ == '__main__':
+	import sys
+	try:
+		if sys.argv[1].lower() == 'test':
+			ConfigFile='./test/config.json'
+	except IndexError:
+		pass
+	finally:
+		del sys
+
 	loadConfig(ConfigFile)
 	mainClass(classroom)

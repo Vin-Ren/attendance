@@ -136,7 +136,7 @@ class Classroom:
 				if caseInsensitive:
 					if recorder.subject_name.lower() == subject_name.lower():
 						filtered_recorders.append(recorder)
-
+						continue
 				if recorder.subject_name == subject_name:
 					filtered_recorders.append(recorder)
 
