@@ -1,7 +1,9 @@
 {
     "database_filename": "./data.json",
     "subject_list": "Science, Literature, Math",
-    "view_caseinsensitive": true,
+    "case-insensitive": true,
+    "reverse_sorted_statistics": true,
+    "statistics_blacklisted_attendance_parameters": [],
     "classroom_constructor": {
         "class_name": "Example Class",
         "students_file": "./students.txt",
