@@ -28,6 +28,7 @@ def Pause(message: str = "Press enter to continue.",
 				print(f"\r{frame % FmtedTime:<{msgLenFmtr}}", end="")
 			else:
 				print(f"\r{frame:<{msgLenFmtr}}", end="")
+			time.sleep(waitTime)
 	UserInput = input(message) if not waitOnly else None
 	return UserInput
 

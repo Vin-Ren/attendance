@@ -2,8 +2,8 @@ import time
 import json
 
 # Constants
-dateformat = '%d-%m-%y'
-timeformat = '%H:%M:%S'
+DATE_FORMAT = '%d-%m-%y'
+TIME_FORMAT = '%H:%M:%S'
 
 
 class School:
@@ -12,21 +12,15 @@ class School:
 				 classroom_list: list = []):
 		self.name = name
 		self.classroom_list = classroom_list
-		self.created_datetime = time.strftime(f'{dateformat} {timeformat}')
+		self.created_datetime = time.strftime(f'{DATE_FORMAT} {TIME_FORMAT}')
 
 	@property
 	def classroom_names(self):
-		class_names = []
-		for classroom in self.classroom_list:
-			class_names.append(classroom.name)
-		return class_names
+		return [classroom.name for classrom in self.classroom_list]
 
 	@property
 	def recorder_count(self):
-		recorder_count = 0
-		for classroom in self.classroom_list:
-			recorder_count += len(classroom.attendance_recorders)
-		return recorder_count
+		return sum([classroom.recorder_count for classroom in self.classroom_list])
 
 	def __repr__(self):
 		return f'{self.__class__.__name__}({self.name}, {self.classroom_list})'
@@ -54,10 +48,7 @@ class School:
 		name = self.name
 		created_datetime = self.created_datetime
 		classroom_list = self.classroom_list
-		classrooms_data = []
-		for classroom in classroom_list:
-			classroom_data = classroom.getdata()
-			classrooms_data.append(classroom_data)
+		classroms_data = [classroom.getdata() for classroom in classroom_list]
 
 		data = {'name': name,
 				'created_datetime': created_datetime,
@@ -77,10 +68,7 @@ class School:
 		name = data['name']
 		created_datetime = data['created_datetime']
 		classrooms_data = data['classrooms_data']
-		classroom_list = []
-		for data in classrooms_data:
-			classroom_obj = Classroom.load(data)
-			classroom_list.append(classroom_obj)
+		classroom_list = [Classroom.load(data) for data in classrooms_data]
 
 		obj = School(name, classroom_list)
 
@@ -107,6 +95,10 @@ class Classroom:
 		self.students = students
 		self.attendance_parameters = attendance_parameters
 		self.attendance_recorders = []
+
+	@property
+	def recorder_count(self):
+		return len(self.attendance_recorders)
 
 	def __repr__(self):
 		repr_syntax = f'{self.__class__.__name__}({self.name}, {self.students}, {self.attendance_parameters})'
@@ -167,18 +159,13 @@ class Classroom:
 		return data
 
 	def get_recorders_data(self):
-		recorders_data = []
-		for recorder in self.attendance_recorders:
-			recorder_data = recorder.getdata()
-			recorders_data.append(recorder_data)
-		return recorders_data
+		return [recorder.getdata() for recorder in self.attendance_recorders]
 
 	def save(self,
 			 filename:str):
 		data = self.getdata()
 		with open(filename, 'w') as file:
 			json.dump(data, file, indent=4)
-
 		return 0
 
 	@staticmethod
@@ -190,9 +177,7 @@ class Classroom:
 
 		obj = Classroom(name, students, attendance_parameters)
 
-		for data in recorders_data:
-			recorderobj = Recorder.load(data, obj)
-			obj.attendance_recorders.append(recorderobj)
+		obj.attendance_record = [Recorder.load(data, obj) for data in recorders_data]
 
 		return obj
 
@@ -201,9 +186,8 @@ class Classroom:
 		with open(filename, 'r') as file:
 			data = json.load(file)
 
-		obj = Classroom.load(data)
-
-		return obj
+			obj = Classroom.load(data)
+			return obj
 
 
 class Recorder:
@@ -213,8 +197,8 @@ class Recorder:
 				 date: str):
 		self.subject_name = subject_name
 		self.classroom = classroom
-		self.created_datetime = time.strftime(f'{dateformat} {timeformat}')
-		self.modified_datetime = time.strftime(f'{dateformat} {timeformat}')
+		self.created_datetime = time.strftime(f'{DATE_FORMAT} {TIME_FORMAT}')
+		self.modified_datetime = time.strftime(f'{DATE_FORMAT} {TIME_FORMAT}')
 		self.date = date
 		self.attendance_record = {}
 
@@ -224,13 +208,9 @@ class Recorder:
 
 	@property
 	def parameter_stats(self):
-		parameter_stats = {}
-		parameters = self.parameters
 		recorded_params = list(self.attendance_record.values())
 
-		for parameter in parameters.keys():
-			paramCount = recorded_params.count(parameter)
-			parameter_stats[parameter] = paramCount
+		parameter_stats = {parameter: recorded_params.count(parameter) for parameter in self.parameters.keys()}
 		return parameter_stats
 
 	@property
@@ -245,6 +225,8 @@ class Recorder:
 			student = self.students[studentID]
 			parameter = self.parameters[studentParam]
 			human_readable.update({student:parameter})
+		# Less readable oneliner dict comp: 
+		# human_readable = {self.students[studentID]:self.parameters[studentParam] for studentID, studentParam in self.attendance_record.items()}
 		return human_readable
 
 	def __str__(self):
@@ -271,7 +253,7 @@ class Recorder:
 			except KeyError:
 				raise KeyError('Invalid Attendance Record')
 		self.attendance_record = attendance_record
-		self.modified_datetime = time.strftime(f'{dateformat} {timeformat}')
+		self.modified_datetime = time.strftime(f'{DATE_FORMAT} {TIME_FORMAT}')
 		return self
 
 	def record(self,
@@ -306,7 +288,7 @@ class Recorder:
 		if not InterfaceOnly:
 			if len(attendance_record) == len(self.classroom.students):
 				self.attendance_record = attendance_record
-				self.modified_datetime = time.strftime(f'{dateformat} {timeformat}')
+				self.modified_datetime = time.strftime(f'{DATE_FORMAT} {TIME_FORMAT}')
 				print('Successfully Written Attendance Record.')
 				return self
 		return attendance_record
@@ -316,7 +298,7 @@ class Recorder:
 		attendance_record = self.attendance_record
 		attendance_record.update(updater)
 		self.load_record(attendance_record)
-		self.modified_datetime = time.strftime(f'{dateformat} {timeformat}')
+		self.modified_datetime = time.strftime(f'{DATE_FORMAT} {TIME_FORMAT}')
 		return self.attendance_record
 
 	def getdata(self):

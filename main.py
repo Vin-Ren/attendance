@@ -135,7 +135,7 @@ def clearScreen():
 
 
 def currDate():
-	return time.strftime(attendance.dateformat)
+	return time.strftime(attendance.DATE_FORMAT)
 
 
 def saveData(school: attendance.School = None,
@@ -222,8 +222,8 @@ def formatter(recorder:attendance.Recorder,
 def Timestamp(datetime: str = None,
 			  date: str = None,
 			  time: str = None):
-	dateFmt = attendance.dateformat.split('-')
-	timefmt = attendance.timeformat.split(':')
+	dateFmt = attendance.DATE_FORMAT.split('-')
+	timefmt = attendance.TIME_FORMAT.split(':')
 
 	fmtIdx = lambda format, val: format.index(val)
 
@@ -356,6 +356,9 @@ def viewStats(config: dict,
 
 	recorderCount = len(classroom.attendance_recorders)
 
+	if recorderCount <= 0:
+		return print("No recorders in database, Cannot create statistics.")
+
 	rawstat, sortedstats = statistics(config=config,
 									  classroom=classroom,
 									  Input=Input,
@@ -413,19 +416,19 @@ Examples:
 Syntax: R1
 Effect: Would Initiate A Record Of The Subject [{subject_list[0]}] On Today's Date.
 
-Syntax: RC <Subject Name> <Date Format: {attendance.dateformat} Ex: {currDate()}>
+Syntax: RC <Subject Name> <Date Format: {attendance.DATE_FORMAT} Ex: {currDate()}>
 Effect: Would Initiate A Record Of The Given Subject On The Given Date. 
 
 Syntax: V1
 Effect: Would Initiate A View Action Of All The Subject [{subject_list[0]}] Records.
 
-Syntax: V1 <Date Format: {attendance.dateformat} Ex: {currDate()}>
+Syntax: V1 <Date Format: {attendance.DATE_FORMAT} Ex: {currDate()}>
 Effect: Would Initiate A View Action On The Subject [{subject_list[0]}] Record On The Specified Date.
 
-Syntax: E1 <Date Format: {attendance.dateformat} Ex: {currDate()}>
+Syntax: E1 <Date Format: {attendance.DATE_FORMAT} Ex: {currDate()}>
 Effect: Would Initiate An Edit Action On The Subject [{subject_list[0]}] On The Specified Date.
 
-Syntax: VC <Date Format: {attendance.dateformat} Ex: {currDate()}> <Subjectname>
+Syntax: VC <Date Format: {attendance.DATE_FORMAT} Ex: {currDate()}> <Subjectname>
 Effect: Initiate View Action With The Given Date or Subjectname or Both.
         It's case-insensitivity can be changed in the config file.
 
@@ -515,7 +518,7 @@ def dateFmt(date: str):
 def verifyDate(candidate: str):
 	try:
 		candidate = dateFmt(candidate)
-		candidateObj = time.strptime(candidate, attendance.dateformat)
+		candidateObj = time.strptime(candidate, attendance.DATE_FORMAT)
 		return True
 	except ValueError:
 		return False
@@ -526,7 +529,7 @@ def verifyDates(candidates: list[str]):
 	for candidate in candidates:
 		try:
 			candidate = dateFmt(candidate)
-			candidateObj = time.strptime(candidate, attendance.dateformat)
+			candidateObj = time.strptime(candidate, attendance.DATE_FORMAT)
 			result[candidate] = True
 		except ValueError:
 			result[candidate] = False
