@@ -45,8 +45,6 @@ Attendance Has 3 Classes:
 
 ### [Recorder](./attendance.py#L193-L334)
 
-`Recorder.__init__(self, subject_name: str, classroom: Classroom, date: str)` takes 3 required arguments. the subject name, the classroom it's going to inherit students and parameters from, and to be displayed date.
-
 Recorder object created its self.created_datetime, self.modified_datetime, and self.attendance_record when the __init__ method is called.
 Recorder object also gives you access to students, parameters, parameter_stats (returns an empty dict if nothing was found on the attendance record or the parameter is not compatible with the record), and human-readable.
 - `Recorder.students` returns the Classroom.students. (type: dictionary)
@@ -56,22 +54,25 @@ Recorder object also gives you access to students, parameters, parameter_stats (
 
  **Functions**
 
-**1. `Recorder.record(self, attendance_record: dict = None, InterfaceOnly = False, InterfaceStoppers: list = ['stop'])` **
+**1. `Recorder.__init__(self, subject_name: str, classroom: Classroom, date: str)`** 
+Upon initialization, takes 3 required arguments. the subject name, the classroom it's going to inherit students and parameters from, and to be displayed date.
+
+**2. `Recorder.record(self, attendance_record: dict = None, InterfaceOnly = False, InterfaceStoppers: list = ['stop'])`**
 A basic attendance_recording interface. record the attendance and assign it into recorder.attendance_record if nothing goes wrong, then returns the recorder object.
 - attendance_record would be passed to recorder.load_record.
 - If InterfaceOnly is set to true, the record would only record the attendance. When the passed parameter is in Interface Stoppers, the interface loop would automatically stop and returns the recording dictionary.
 - InterfaceStoppers Will be used as a stop parameter when InterfaceOnly is enabled.
 
-**2. `Recorder.load_record(self, attendance_record)`**
+**3. `Recorder.load_record(self, attendance_record)`**
 Loads the attendance_record and assigning it into Recorder.attendance_record if it passes some basic tests.
 
-**3. `Recorder.update(self, updater: dict)`**
+**4. `Recorder.update(self, updater: dict)`**
 updates the current Recorder.attendance_record with the updater dict.
 
-**4. `Recorder.getdata()`**
+**5. `Recorder.getdata()`**
 returns the recorder data in dictionary. Valid to be passed into Recorder.load() as the data parameter.
 
-**5. `Recorder.load(data, classroom: Classroom)`**
+**6. `Recorder.load(data, classroom: Classroom)`**
 Recorder.load is a staticmethod.
 returns a recorder object constructed from the data and inherits from the classroom.
 
